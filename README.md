@@ -14,6 +14,8 @@
 
 ## Download
 <a href="https://play.google.com/store/apps/details?id=com.manna.parsing2"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Google_Play_Store_badge_EN.svg/512px-Google_Play_Store_badge_EN.svg.png" width="30%"/></a>
+<br>
+![android](https://user-images.githubusercontent.com/37360089/104084035-e706a600-5286-11eb-88cf-623e5ac36701.png)
 
 ## 💒 Team
 - 김진엽b : 총괄, 클라이언트 개발
