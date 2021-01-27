@@ -39,7 +39,6 @@ public class MainActivity extends AppCompatActivity {
 
     public static final List<List<Mccheyne>> AllList = new ArrayList<>();
     public static String[] mcString = new String[4];
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -131,17 +130,26 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected Void doInBackground(Void... params) {
+//            GetRange();
             for (int i = 1; i <= 4; i++) {
                 ConnectToWeb(i);
             }
             return null;
         }
+//        private void GetRange(){
+//            try {
+//                Document doc2 = Jsoup.connect("http://www.bible4u.pe.kr/zbxe/read").get();
+//                Elements titles2 = doc2.select("div.content.xe_content tr[bgcolor=#FFFFFF][align=center][height=20]");
+//                mccheyneRangeString = titles2.text();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }
 
         private void ConnectToWeb(int num) {
             try {
                 String url = "http://bible4u.pe.kr/zbxe/?mid=open_read&ver=korean_krv&b_num=";
-                Document doc = Jsoup.connect(url + num)
-                        .get();
+                Document doc = Jsoup.connect(url + num).get();
                 mcString[num - 1] = GetData(doc);
             } catch (IOException e) {
                 e.printStackTrace();

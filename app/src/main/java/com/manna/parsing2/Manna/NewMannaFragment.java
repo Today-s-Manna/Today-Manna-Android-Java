@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import android.util.Log;
@@ -19,7 +20,14 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import androidx.fragment.app.Fragment;
@@ -32,7 +40,9 @@ import android.widget.TextView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.manna.parsing2.Model.MannaData;
+import com.manna.parsing2.Model.Mccheyne;
 import com.manna.parsing2.R;
+import com.manna.parsing2.activity.MainActivity;
 
 import static android.content.Context.CLIPBOARD_SERVICE;
 
@@ -42,7 +52,11 @@ import static android.content.Context.CLIPBOARD_SERVICE;
 
 public class NewMannaFragment extends Fragment {
 
+    private TextView _dateTextView;
+    private TextView _mannaRangeTextView;
+    private TextView _mccheyneRangeTextView;
     private TextView _mannaTextView;
+
     private FloatingActionButton shareButton;
 
     private RequestQueue queue;
@@ -60,15 +74,46 @@ public class NewMannaFragment extends Fragment {
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_manna, container, false);
 
+        _dateTextView = v.findViewById(R.id.dateTextView);
+        _mannaRangeTextView = v.findViewById(R.id.mannaRangeTextVIew);
+        _mccheyneRangeTextView = v.findViewById(R.id.mccheyneRangeTextVIew);
         _mannaTextView = v.findViewById(R.id.textView);
+
         shareButton = v.findViewById(R.id.button_share);
 
         queue = Volley.newRequestQueue(Objects.requireNonNull(getActivity()).getApplicationContext());
         getManna();
 
+        JsoupAsyncTask_mccheyneRange jsoupAsyncTask_mccheyneRange = new JsoupAsyncTask_mccheyneRange();
+        jsoupAsyncTask_mccheyneRange.execute();
+
         return v;
     }
+    private class JsoupAsyncTask_mccheyneRange extends AsyncTask<Void, Void, Void> {
+        private String mccheyneRangeString="";
 
+        @Override
+        protected Void doInBackground(Void... params) {
+            GetRange();
+            return null;
+        }
+        private void GetRange(){
+            try {
+                Document doc2 = Jsoup.connect("http://www.bible4u.pe.kr/zbxe/read").get();
+                Elements titles2 = doc2.select("div.content.xe_content tr[bgcolor=#FFFFFF][align=center][height=20]");
+                mccheyneRangeString = titles2.text();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        @SuppressLint("SetTextI18n")
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            _mccheyneRangeTextView.setText("맥체인 범위\n"+mccheyneRangeString);
+        }
+    }
     private void getManna() {
         final String url = "http://3.138.184.130:9179/api/v1/today-manna/";
 
@@ -94,10 +139,13 @@ public class NewMannaFragment extends Fragment {
                                 contents.append(content).append("\n\n");
                             }
                             mannaData.setContent(contents.toString());
+                            _dateTextView.setText(date+ "\n\n");
 
                             allString += date + "\n\n" + verse + "\n\n" + contents.toString();
 
-                            _mannaTextView.setText(allString);
+                            _dateTextView.setText(date);
+                            _mannaRangeTextView.setText("만나 범위\n"+verse);
+                            _mannaTextView.setText(contents.toString());
 
                             //공유 버튼 리스너
                             shareButton.setOnClickListener(new Button.OnClickListener() {
